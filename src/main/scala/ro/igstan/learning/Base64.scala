@@ -10,8 +10,8 @@ object Base64 {
   /**
    * A few type aliases to avoid cluttering the main `encode` method.
    */
-  type Group = (Option[Int], Option[Int])
-  type State = (Seq[Int], Group)
+  private type Group = (Option[Int], Option[Int])
+  private type State = (Seq[Int], Group)
 
   /**
    * The Base64 encoding algorithm takes a sequence of bytes, splits each
