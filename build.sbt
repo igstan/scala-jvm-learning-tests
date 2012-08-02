@@ -4,6 +4,8 @@ version := "1.0.0"
 
 scalaVersion := "2.9.1"
 
+net.virtualvoid.sbt.graph.Plugin.graphSettings
+
 libraryDependencies ++= Seq(
   "net.liftweb"            %% "lift-json"          % "2.4",
   "org.scalatra"            % "scalatra"           % "2.1.0.M2",
