@@ -5,6 +5,7 @@ import org.scalatest.matchers.MustMatchers
 
 import net.liftweb.json.DefaultFormats
 import net.liftweb.json.JsonAST._
+import net.liftweb.json.Serialization.write
 import net.liftweb.json.parse
 
 case class Sample(key: String)
@@ -21,6 +22,11 @@ class LearningLiftJson extends FunSpec with MustMatchers {
     it("parses the string into a case class") {
       val sample = parse("""{ "key": "value" }""").extract[Sample]
       sample must be (Sample("value"))
+    }
+
+    it("serializes a case class into a correct string") {
+      val json = write(Sample("value"))
+      json must be ("""{"key":"value"}""")
     }
   }
 }
