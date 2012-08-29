@@ -70,5 +70,10 @@ class LearningLiftJson extends FunSpec with MustMatchers {
 
       foo must be (Foo(foo="oof"))
     }
+
+    it("ignores unknown JSON properties when deserializing a case class") {
+      val sample = read[Sample]("""{ "key": "value", "ignore": true }""")
+      sample must be (Sample("value"))
+    }
   }
 }
