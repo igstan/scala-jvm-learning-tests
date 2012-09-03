@@ -9,6 +9,7 @@ import net.liftweb.json.Serialization.{ read, write }
 import net.liftweb.json.parse
 
 case class Sample(key: String)
+case class SampleWithOptional(key: String, value: Option[String] = None, collection: Seq[String] = Seq.empty)
 
 trait Common
 case class Foo(foo: String) extends Common
@@ -74,6 +75,11 @@ class LearningLiftJson extends FunSpec with MustMatchers {
     it("ignores unknown JSON properties when deserializing a case class") {
       val sample = read[Sample]("""{ "key": "value", "ignore": true }""")
       sample must be (Sample("value"))
+    }
+
+    it("handles optional fields") {
+      val sample = read[SampleWithOptional]("""{ "key": "value" }""")
+      sample must be (SampleWithOptional("value", None, Seq.empty))
     }
   }
 }
