@@ -14,6 +14,7 @@ libraryDependencies ++= Seq(
   "org.seleniumhq.selenium"   % "selenium-htmlunit-driver" % "2.25.0",
   "org.apache.httpcomponents" % "httpclient"               % "4.2.1" ,
   "net.liftweb"              %% "lift-json"                % "2.4",
+  "net.liftweb"              %% "lift-json-ext"            % "2.4",
   "org.scalatra"              % "scalatra"                 % "2.1.0",
   "org.eclipse.jetty"         % "jetty-webapp"             % "8.1.0.RC5",
   "org.scalatra"              % "scalatra-scalatest"       % "2.1.0"    % "test",

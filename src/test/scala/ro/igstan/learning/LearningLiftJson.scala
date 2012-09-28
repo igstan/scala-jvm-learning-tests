@@ -1,15 +1,18 @@
 package ro.igstan.learning
 
+import org.joda.time.DateTime
 import org.scalatest.FunSpec
 import org.scalatest.matchers.MustMatchers
 
-import net.liftweb.json.{ DefaultFormats, Formats, ShortTypeHints, TypeHints }
+import net.liftweb.json.ext.DateTimeSerializer
 import net.liftweb.json.JsonAST._
-import net.liftweb.json.Serialization.{ read, write }
 import net.liftweb.json.parse
+import net.liftweb.json.Serialization.{ read, write }
+import net.liftweb.json.{ DefaultFormats, Formats, ShortTypeHints, TypeHints }
 
 case class Sample(key: String)
 case class SampleWithOptional(key: String, value: Option[String] = None, collection: Seq[String] = Seq.empty)
+case class ClassWithDateField(date: DateTime, other: String)
 
 trait Common
 case class Foo(foo: String) extends Common
@@ -80,6 +83,14 @@ class LearningLiftJson extends FunSpec with MustMatchers {
     it("handles optional fields") {
       val sample = read[SampleWithOptional]("""{ "key": "value" }""")
       sample must be (SampleWithOptional("value", None, Seq.empty))
+    }
+  }
+
+  describe("date format deserialization using JodaTime") {
+    it ("parses date values") {
+      implicit val formats = net.liftweb.json.DefaultFormats ++ List(DateTimeSerializer())
+      val sample = read[ClassWithDateField]("""{ "date": "2012-01-03T00:00:00Z", "other": "value" }""")
+      sample must be (ClassWithDateField(new DateTime(2012, 1, 3, 2, 0), "value"))
     }
   }
 }
