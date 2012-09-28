@@ -5,7 +5,7 @@ object Base64 {
   /**
    * Sequence of characters available for base 64.
    */
-  val toChar = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  private val toChar = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
 
   /**
    * A few type aliases to avoid cluttering the main `encode` method.
