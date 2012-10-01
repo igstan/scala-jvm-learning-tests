@@ -1,11 +1,12 @@
 package ro.igstan.learning
 
 import org.joda.time.DateTime
+import org.joda.time.chrono.ISOChronology
 import org.scalatest.FunSpec
 import org.scalatest.matchers.MustMatchers
 
-import net.liftweb.json.ext.DateTimeSerializer
-import net.liftweb.json.JsonAST._
+import net.liftweb._
+import json._
 import net.liftweb.json.parse
 import net.liftweb.json.Serialization.{ read, write }
 import net.liftweb.json.{ DefaultFormats, Formats, ShortTypeHints, TypeHints }
@@ -18,6 +19,52 @@ trait Common
 case class Foo(foo: String) extends Common
 case class Bar(bar: String) extends Common
 case class Baz(baz: String) extends Common
+
+trait SimpleType[A, JS <: JValue] {
+  def targetClass: Class[A]
+  def unwrap(json: JS)(implicit format: Formats): A
+  def wrap(a: A)(implicit format: Formats): JS
+}
+
+trait JIntType[A] extends SimpleType[A, JInt]
+trait JStringType[A] extends SimpleType[A, JString]
+
+class SimpleTypeSerializer[A, JS <: JValue](t: SimpleType[A, JS]) extends Serializer[A] {
+  private val Class = t.targetClass
+
+  def deserialize(implicit format: Formats): PartialFunction[(TypeInfo, JValue), A] = {
+    case (TypeInfo(Class, _), json) => json match {
+      case json: JS => t.unwrap(json)
+      case value => throw new MappingException("Can't convert " + value + " to " + Class)
+    }
+  }
+
+  def serialize(implicit format: Formats): PartialFunction[Any, JValue] = {
+    case d: A if d.asInstanceOf[AnyRef].getClass == t.targetClass => t.wrap(d)
+  }
+}
+
+object DateTimeSerializer {
+  import org.joda.time.{ DateTime, DateTimeZone }
+  import org.joda.time.format.ISODateTimeFormat
+  import net.liftweb.json.MappingException
+
+  val formatter = ISODateTimeFormat.dateTimeNoMillis
+
+  def apply() = new SimpleTypeSerializer(new JStringType[DateTime]() {
+    def targetClass = classOf[DateTime]
+    def unwrap(json: JString)(implicit format: Formats) = parse(json.s)
+    def wrap(dateTime: DateTime)(implicit format: Formats) = JString(formatter.print(dateTime))
+  })
+
+  private def parse(json: String) = {
+    try {
+      formatter.withOffsetParsed.parseDateTime(json)
+    } catch {
+      case e => throw new MappingException("Invalid date format: " + json)
+    }
+  }
+}
 
 class LearningLiftJson extends FunSpec with MustMatchers {
   implicit val formats = DefaultFormats
@@ -90,7 +137,7 @@ class LearningLiftJson extends FunSpec with MustMatchers {
     it ("parses date values") {
       implicit val formats = net.liftweb.json.DefaultFormats ++ List(DateTimeSerializer())
       val sample = read[ClassWithDateField]("""{ "date": "2012-01-03T00:00:00Z", "other": "value" }""")
-      sample must be (ClassWithDateField(new DateTime(2012, 1, 3, 2, 0), "value"))
+      sample must be (ClassWithDateField(new DateTime(2012, 1, 3, 0, 0, ISOChronology.getInstanceUTC), "value"))
     }
   }
 }
