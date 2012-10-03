@@ -59,4 +59,11 @@ class LearningJodaTime extends FunSpec with MustMatchers {
       assert(date1 isEqual date2)
     }
   }
+
+  describe("formatting") {
+    it ("formats M/D/YYYY") {
+      val date = new DateTime(2012, 1, 3, 0, 0, DateTimeZone.UTC)
+      assert("1/3/2012" === date.toString("M/D/YYYY"))
+    }
+  }
 }
