@@ -132,7 +132,7 @@ class LearningLiftJson extends FunSpec with MustMatchers {
       sample must be (SampleWithOptional("value", None, Seq.empty))
     }
 
-    it("deserializes array of strings") {
+    it("deserializes an array of strings") {
       read[List[String]]("""["123"]""") must be (List("123"))
     }
   }
