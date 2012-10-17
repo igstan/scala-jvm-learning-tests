@@ -131,6 +131,10 @@ class LearningLiftJson extends FunSpec with MustMatchers {
       val sample = read[SampleWithOptional]("""{ "key": "value" }""")
       sample must be (SampleWithOptional("value", None, Seq.empty))
     }
+
+    it("deserializes array of strings") {
+      read[List[String]]("""["123"]""") must be (List("123"))
+    }
   }
 
   describe("date format deserialization using JodaTime") {
